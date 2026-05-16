@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if group %}Edit{% else %}Add{% endif %} Group - Messenger Bot{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1>
+        {% if group %}
+            <i class="fas fa-edit"></i> Edit Group
+        {% else %}
+            <i class="fas fa-plus"></i> Add New Group
+        {% endif %}
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Group ID -->
+                    <div class="mb-3">
+                        <label for="{{ form.group_id.id_for_label }}" class="form-label">
+                            <strong>{{ form.group_id.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        {% if form.group_id.errors %}
+                            {{ form.group_id }}
+                            <div class="invalid-feedback d-block">{{ form.group_id.errors.0 }}</div>
+                        {% else %}
+                            {{ form.group_id }}
+                        {% endif %}
+                        <small class="form-text text-muted">The numeric ID of your Facebook Group or Chat</small>
+                    </div>
+
+                    <!-- Group Name -->
+                    <div class="mb-3">
+                        <label for="{{ form.group_name.id_for_label }}" class="form-label">
+                            <strong>{{ form.group_name.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        {% if form.group_name.errors %}
+                            {{ form.group_name }}
+                            <div class="invalid-feedback d-block">{{ form.group_name.errors.0 }}</div>
+                        {% else %}
+                            {{ form.group_name }}
+                        {% endif %}
+                        <small class="form-text text-muted">A friendly name to identify this group</small>
+                    </div>
+
+                    <!-- Active -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                <strong>{{ form.is_active.label }}</strong>
+                            </label>
+                        </div>
+                        <small class="form-text text-muted">Inactive groups will not receive announcements</small>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            {% if group %}Save Changes{% else %}Add Group{% endif %}
+                        </button>
+                        <a href="{% url 'groups_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Information</h5>
+            </div>
+            <div class="card-body">
+                <h6>Finding Your Group ID:</h6>
+                <ol class="small">
+                    <li>Open your Facebook Group in your browser</li>
+                    <li>Look at the URL in the address bar</li>
+                    <li>Find the ID after <code>/groups/</code></li>
+                </ol>
+
+                <hr>
+
+                <h6>For Chat Conversations:</h6>
+                <ol class="small">
+                    <li>Open the chat in Messenger</li>
+                    <li>Check the URL for the chat ID</li>
+                    <li>It usually appears after <code>/messaging/t/</code></li>
+                </ol>
+
+                <hr>
+
+                <div class="alert alert-info small mb-0">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Tip:</strong> The bot must be added to the group/chat before it can send messages!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

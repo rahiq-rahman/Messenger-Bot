@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Groups - Messenger Bot{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-users"></i> Messenger Groups</h1>
+    <a href="{% url 'group_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Group
+    </a>
+</div>
+
+{% if groups %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Group Name</th>
+                <th>Group ID</th>
+                <th>Announcements</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td>
+                    <strong>{{ group.group_name }}</strong>
+                </td>
+                <td>
+                    <code class="small">{{ group.group_id }}</code>
+                </td>
+                <td>
+                    <span class="badge bg-info">{{ group.announcements.count }}</span>
+                </td>
+                <td>
+                    {% if group.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <small class="text-muted">{{ group.created_at|date:"Y-m-d" }}</small>
+                </td>
+                <td>
+                    <a href="{% url 'group_edit' group.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'group_delete' group.pk %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info" role="alert">
+    <i class="fas fa-info-circle"></i>
+    <strong>No groups added yet!</strong>
+    <a href="{% url 'group_create' %}">Add your first group</a>
+</div>
+{% endif %}
+
+<!-- How to find Group ID -->
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> How to find your Group ID</h5>
+    </div>
+    <div class="card-body">
+        <ol>
+            <li>Go to your Facebook Group or Chat</li>
+            <li>Look at the URL in your browser address bar</li>
+            <li>The Group ID is the number in the URL after "groups/" or "messaging/t/"</li>
+            <li>Copy and paste it here</li>
+        </ol>
+        <p class="text-muted small mb-0">
+            <strong>Example:</strong> If URL is <code>https://www.facebook.com/groups/123456789/</code>, 
+            then Group ID is <code>123456789</code>
+        </p>
+    </div>
+</div>
+{% endblock %}

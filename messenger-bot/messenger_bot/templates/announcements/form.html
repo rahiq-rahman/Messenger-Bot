@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if announcement %}Edit{% else %}Create{% endif %} Announcement - Messenger Bot{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1>
+        {% if announcement %}
+            <i class="fas fa-edit"></i> Edit Announcement
+        {% else %}
+            <i class="fas fa-plus"></i> Create New Announcement
+        {% endif %}
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <strong>{{ form.title.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        {% if form.title.errors %}
+                            {{ form.title }}
+                            <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                        {% else %}
+                            {{ form.title }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Message -->
+                    <div class="mb-3">
+                        <label for="{{ form.message.id_for_label }}" class="form-label">
+                            <strong>{{ form.message.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        {% if form.message.errors %}
+                            {{ form.message }}
+                            <div class="invalid-feedback d-block">{{ form.message.errors.0 }}</div>
+                        {% else %}
+                            {{ form.message }}
+                        {% endif %}
+                        <small class="form-text text-muted">This is the message that will be sent to your groups.</small>
+                    </div>
+
+                    <!-- Frequency -->
+                    <div class="mb-3">
+                        <label for="{{ form.frequency.id_for_label }}" class="form-label">
+                            <strong>{{ form.frequency.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        {% if form.frequency.errors %}
+                            {{ form.frequency }}
+                            <div class="invalid-feedback d-block">{{ form.frequency.errors.0 }}</div>
+                        {% else %}
+                            {{ form.frequency }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Time -->
+                    <div class="mb-3">
+                        <label for="{{ form.scheduled_time.id_for_label }}" class="form-label">
+                            <strong>{{ form.scheduled_time.label }}</strong>
+                        </label>
+                        {% if form.scheduled_time.errors %}
+                            {{ form.scheduled_time }}
+                            <div class="invalid-feedback d-block">{{ form.scheduled_time.errors.0 }}</div>
+                        {% else %}
+                            {{ form.scheduled_time }}
+                        {% endif %}
+                        <small class="form-text text-muted">Time to send announcement (24-hour format)</small>
+                    </div>
+
+                    <!-- Date (for one-time) -->
+                    <div class="mb-3" id="date-field" style="display: none;">
+                        <label for="{{ form.scheduled_date.id_for_label }}" class="form-label">
+                            {{ form.scheduled_date.label }}
+                        </label>
+                        {% if form.scheduled_date.errors %}
+                            {{ form.scheduled_date }}
+                            <div class="invalid-feedback d-block">{{ form.scheduled_date.errors.0 }}</div>
+                        {% else %}
+                            {{ form.scheduled_date }}
+                        {% endif %}
+                    </div>
+
+                    <!-- Days of Week (for weekly) -->
+                    <div class="mb-3" id="days-field" style="display: none;">
+                        <label for="{{ form.days_of_week.id_for_label }}" class="form-label">
+                            {{ form.days_of_week.label }}
+                        </label>
+                        {% if form.days_of_week.errors %}
+                            {{ form.days_of_week }}
+                            <div class="invalid-feedback d-block">{{ form.days_of_week.errors.0 }}</div>
+                        {% else %}
+                            {{ form.days_of_week }}
+                        {% endif %}
+                        <small class="form-text text-muted">e.g., Mon,Wed,Fri</small>
+                    </div>
+
+                    <!-- Day of Month (for monthly) -->
+                    <div class="mb-3" id="day-field" style="display: none;">
+                        <label for="{{ form.day_of_month.id_for_label }}" class="form-label">
+                            {{ form.day_of_month.label }}
+                        </label>
+                        {% if form.day_of_month.errors %}
+                            {{ form.day_of_month }}
+                            <div class="invalid-feedback d-block">{{ form.day_of_month.errors.0 }}</div>
+                        {% else %}
+                            {{ form.day_of_month }}
+                        {% endif %}
+                        <small class="form-text text-muted">Day number 1-31</small>
+                    </div>
+
+                    <!-- Groups -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <strong>{{ form.groups.label }}</strong>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            {% if form.groups.errors %}
+                                {{ form.groups }}
+                                <div class="invalid-feedback d-block">{{ form.groups.errors.0 }}</div>
+                            {% else %}
+                                {{ form.groups }}
+                            {% endif %}
+                        </div>
+                        <small class="form-text text-muted">Select which groups should receive this announcement.</small>
+                    </div>
+
+                    <!-- Active -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                <strong>{{ form.is_active.label }}</strong>
+                            </label>
+                        </div>
+                        <small class="form-text text-muted">Inactive announcements will not be sent.</small>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            {% if announcement %}Save Changes{% else %}Create Announcement{% endif %}
+                        </button>
+                        <a href="{% url 'announcements_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Panel -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-question-circle"></i> Help</h5>
+            </div>
+            <div class="card-body">
+                <h6>Frequency Types:</h6>
+                <ul class="small">
+                    <li><strong>One Time:</strong> Send once on a specific date</li>
+                    <li><strong>Daily:</strong> Send every day at the specified time</li>
+                    <li><strong>Weekly:</strong> Send on specific days of the week</li>
+                    <li><strong>Monthly:</strong> Send on a specific day each month</li>
+                </ul>
+
+                <hr>
+
+                <h6>Examples:</h6>
+                <p class="small">
+                    <strong>Daily standup:</strong><br>
+                    Frequency: Daily<br>
+                    Time: 09:00
+                </p>
+                <p class="small">
+                    <strong>Weekly meeting reminder:</strong><br>
+                    Frequency: Weekly<br>
+                    Days: Mon,Wed,Fri<br>
+                    Time: 14:30
+                </p>
+                <p class="small">
+                    <strong>Monthly report:</strong><br>
+                    Frequency: Monthly<br>
+                    Day: 1<br>
+                    Time: 08:00
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide fields based on frequency selection
+    const frequencySelect = document.getElementById('frequency-select');
+    const dateField = document.getElementById('date-field');
+    const daysField = document.getElementById('days-field');
+    const dayField = document.getElementById('day-field');
+
+    function updateFields() {
+        const frequency = frequencySelect.value;
+        dateField.style.display = frequency === 'once' ? 'block' : 'none';
+        daysField.style.display = frequency === 'weekly' ? 'block' : 'none';
+        dayField.style.display = frequency === 'monthly' ? 'block' : 'none';
+    }
+
+    frequencySelect.addEventListener('change', updateFields);
+    updateFields(); // Initial call
+</script>
+{% endblock %}

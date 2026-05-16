@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Logs - Messenger Bot{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1><i class="fas fa-history"></i> Announcement Logs</h1>
+    <p class="text-muted">Track all announcements sent to your groups</p>
+</div>
+
+{% if logs %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Announcement</th>
+                        <th>Group</th>
+                        <th>Sent At</th>
+                        <th>Status</th>
+                        <th>Error Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            <strong>{{ log.announcement.title }}</strong>
+                            <br>
+                            <small class="text-muted">{{ log.announcement.message|truncatewords:10 }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ log.group.group_name }}</strong>
+                            <br>
+                            <code class="small text-muted">{{ log.group.group_id }}</code>
+                        </td>
+                        <td>
+                            <small>{{ log.sent_at|date:"Y-m-d H:i:s" }}</small>
+                        </td>
+                        <td>
+                            {% if log.status == 'success' %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle"></i> Success
+                                </span>
+                            {% elif log.status == 'failed' %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-exclamation-circle"></i> Failed
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-hourglass-half"></i> Pending
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.error_message %}
+                                <small class="text-danger">{{ log.error_message|truncatewords:5 }}</small>
+                            {% else %}
+                                <small class="text-muted">—</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mt-4">
+    {% with total=logs|length success=logs|dictsort:"status"|length failed=logs|dictsort:"status"|length %}
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <h4>{{ total }}</h4>
+            <p><i class="fas fa-envelope"></i> Total Sent</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <h4 class="text-success">
+                {% with success_count=logs|dictsort:"status"|dictsort:"status" %}
+                    {% for log in logs %}{% if log.status == 'success' %}+{% endif %}{% endfor %}
+                {% endwith %}
+            </h4>
+            <p><i class="fas fa-check-circle"></i> Successful</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <h4 class="text-danger">
+                {% with failed_count=logs|dictsort:"status"|dictsort:"status" %}
+                    {% for log in logs %}{% if log.status == 'failed' %}+{% endif %}{% endfor %}
+                {% endwith %}
+            </h4>
+            <p><i class="fas fa-times-circle"></i> Failed</p>
+        </div>
+    </div>
+    {% endwith %}
+</div>
+
+{% else %}
+<div class="alert alert-info" role="alert">
+    <i class="fas fa-info-circle"></i>
+    <strong>No logs yet!</strong>
+    <p>Once announcements are sent, they will appear here.</p>
+</div>
+{% endif %}
+
+<!-- Status Explanation -->
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0"><i class="fas fa-question-circle"></i> Status Meanings</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h6><span class="badge bg-success">Success</span></h6>
+                <p class="small">Message was successfully sent to the group</p>
+            </div>
+            <div class="col-md-4">
+                <h6><span class="badge bg-danger">Failed</span></h6>
+                <p class="small">Message failed to send. Check error message for details</p>
+            </div>
+            <div class="col-md-4">
+                <h6><span class="badge bg-warning">Pending</span></h6>
+                <p class="small">Message is waiting to be sent</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
