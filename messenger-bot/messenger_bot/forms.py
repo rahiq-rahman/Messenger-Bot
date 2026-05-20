@@ -89,7 +89,8 @@ class AnnouncementForm(forms.ModelForm):
             }),
         }
 
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
         # Filter groups to show only user's groups
