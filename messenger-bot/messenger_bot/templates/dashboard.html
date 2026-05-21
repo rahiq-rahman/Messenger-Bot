@@ -3,129 +3,126 @@
 {% block title %}Dashboard - Messenger Bot{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
-    <p class="text-muted">Welcome back, {{ user.first_name|default:user.username }}!</p>
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2"><i class="fas fa-chart-line text-indigo-600"></i> Dashboard</h1>
+    <p class="text-gray-600">Welcome back, <span class="font-semibold">{{ user.first_name|default:user.username }}</span>!</p>
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4 class="text-primary">{{ total_announcements }}</h4>
-            <p><i class="fas fa-bell"></i> Total Announcements</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Total Announcements</p>
+                <h3 class="text-4xl font-bold text-gray-900">{{ total_announcements }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-bell text-indigo-600 text-xl"></i>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4 class="text-success">{{ total_groups }}</h4>
-            <p><i class="fas fa-users"></i> Messenger Groups</p>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Messenger Groups</p>
+                <h3 class="text-4xl font-bold text-gray-900">{{ total_groups }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-users text-green-600 text-xl"></i>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4 class="text-info">{{ logs|length }}</h4>
-            <p><i class="fas fa-history"></i> Recent Logs</p>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Recent Logs</p>
+                <h3 class="text-4xl font-bold text-gray-900">{{ logs|length }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-history text-blue-600 text-xl"></i>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card p-4">
-            <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
-            <div class="mt-3">
-                <a href="{% url 'announcement_create' %}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Create Announcement
-                </a>
-                <a href="{% url 'group_create' %}" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Add Group
-                </a>
-                <a href="{% url 'announcements_list' %}" class="btn btn-info">
-                    <i class="fas fa-list"></i> View All Announcements
-                </a>
-            </div>
-        </div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+    <h5 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-bolt text-yellow-500 mr-2"></i>Quick Actions</h5>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="{% url 'announcement_create' %}" class="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+            <i class="fas fa-plus"></i> Create Announcement
+        </a>
+        <a href="{% url 'group_create' %}" class="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-lg hover:shadow-lg transition font-medium">
+            <i class="fas fa-plus"></i> Add Group
+        </a>
+        <a href="{% url 'announcements_list' %}" class="flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium">
+            <i class="fas fa-list"></i> View All
+        </a>
     </div>
 </div>
 
-<!-- Recent Logs -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-light">
-                <h5 class="mb-0"><i class="fas fa-history"></i> Recent Activity</h5>
-            </div>
-            <div class="card-body">
-                {% if logs %}
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Announcement</th>
-                                <th>Group</th>
-                                <th>Sent At</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for log in logs %}
-                            <tr>
-                                <td>
-                                    <strong>{{ log.announcement.title }}</strong>
-                                </td>
-                                <td>{{ log.group.group_name }}</td>
-                                <td>{{ log.sent_at|date:"Y-m-d H:i" }}</td>
-                                <td>
-                                    {% if log.status == 'success' %}
-                                        <span class="badge badge-success">Success</span>
-                                    {% elif log.status == 'failed' %}
-                                        <span class="badge badge-danger">Failed</span>
-                                    {% else %}
-                                        <span class="badge badge-warning">Pending</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{% url 'logs' %}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p class="text-muted mb-0">
-                    <i class="fas fa-inbox"></i> No activity yet. Create an announcement to get started!
-                </p>
-                {% endif %}
-            </div>
+<!-- Recent Activity -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+        <h5 class="font-bold text-gray-900"><i class="fas fa-history mr-2 text-indigo-600"></i>Recent Activity</h5>
+    </div>
+    <div class="overflow-x-auto">
+        {% if logs %}
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Announcement</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Group</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sent At</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for log in logs %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4"><strong class="text-gray-900">{{ log.announcement.title }}</strong></td>
+                    <td class="px-6 py-4 text-gray-700">{{ log.group.group_name }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ log.sent_at|date:"Y-m-d H:i" }}</td>
+                    <td class="px-6 py-4">
+                        {% if log.status == 'success' %}
+                            <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Success</span>
+                        {% elif log.status == 'failed' %}
+                            <span class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold"><i class="fas fa-exclamation-circle mr-1"></i>Failed</span>
+                        {% else %}
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <a href="{% url 'logs' %}" class="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-gray-200 text-indigo-600 hover:bg-indigo-50 transition text-sm font-medium">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="px-6 py-12 text-center">
+            <i class="fas fa-inbox text-4xl text-gray-300 mb-3 block"></i>
+            <p class="text-gray-600 font-medium">No activity yet. Create an announcement to get started!</p>
         </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Setup Instructions -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card border-warning">
-            <div class="card-header bg-warning bg-opacity-10">
-                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Getting Started</h5>
-            </div>
-            <div class="card-body">
-                <ol>
-                    <li><strong>Add Groups:</strong> Go to Groups and add your Messenger group IDs</li>
-                    <li><strong>Create Announcements:</strong> Set up your announcement messages with custom timing</li>
-                    <li><strong>Configure Times:</strong> Choose when to send (daily, weekly, monthly, or one-time)</li>
-                    <li><strong>Monitor Logs:</strong> Check the logs to see if announcements were sent successfully</li>
-                </ol>
-                <p class="text-muted small mt-3 mb-0">
-                    <i class="fas fa-lightbulb"></i> Tip: Make sure your Facebook API token is configured in the settings!
-                </p>
-            </div>
-        </div>
-    </div>
+<!-- Getting Started -->
+<div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border-2 border-amber-200 p-6">
+    <h5 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-info-circle text-amber-600 mr-2"></i>Getting Started</h5>
+    <ol class="space-y-2 text-gray-700">
+        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span><span><strong>Add Groups:</strong> Go to Groups and add your Messenger group IDs</span></li>
+        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span><span><strong>Create Announcements:</strong> Set up your announcement messages with custom timing</span></li>
+        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span><span><strong>Configure Times:</strong> Choose when to send (daily, weekly, monthly, or one-time)</span></li>
+        <li class="flex gap-3"><span class="flex-shrink-0 w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span><span><strong>Monitor Logs:</strong> Check the logs to see if announcements were sent successfully</span></li>
+    </ol>
+    <p class="text-sm text-gray-600 mt-4"><i class="fas fa-lightbulb text-amber-600 mr-2"></i><strong>Tip:</strong> Make sure your Facebook API token is configured in the settings!</p>
 </div>
 {% endblock %}
