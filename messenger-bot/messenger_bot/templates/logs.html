@@ -3,131 +3,152 @@
 {% block title %}Logs - Messenger Bot{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <h1><i class="fas fa-history"></i> Announcement Logs</h1>
-    <p class="text-muted">Track all announcements sent to your groups</p>
+<!-- Header -->
+<div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-900 mb-2"><i class="fas fa-history text-indigo-600"></i> Announcement Logs</h1>
+    <p class="text-gray-600">Track all announcements sent to your groups</p>
 </div>
 
 {% if logs %}
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>Announcement</th>
-                        <th>Group</th>
-                        <th>Sent At</th>
-                        <th>Status</th>
-                        <th>Error Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in logs %}
-                    <tr>
-                        <td>
-                            <strong>{{ log.announcement.title }}</strong>
-                            <br>
-                            <small class="text-muted">{{ log.announcement.message|truncatewords:10 }}</small>
-                        </td>
-                        <td>
-                            <strong>{{ log.group.group_name }}</strong>
-                            <br>
-                            <code class="small text-muted">{{ log.group.group_id }}</code>
-                        </td>
-                        <td>
-                            <small>{{ log.sent_at|date:"Y-m-d H:i:s" }}</small>
-                        </td>
-                        <td>
-                            {% if log.status == 'success' %}
-                                <span class="badge bg-success">
-                                    <i class="fas fa-check-circle"></i> Success
-                                </span>
-                            {% elif log.status == 'failed' %}
-                                <span class="badge bg-danger">
-                                    <i class="fas fa-exclamation-circle"></i> Failed
-                                </span>
-                            {% else %}
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-hourglass-half"></i> Pending
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if log.error_message %}
-                                <small class="text-danger">{{ log.error_message|truncatewords:5 }}</small>
-                            {% else %}
-                                <small class="text-muted">—</small>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<!-- Statistics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Total Sent</p>
+                <h3 class="text-4xl font-bold text-gray-900">{{ logs|length }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-envelope text-gray-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Successful</p>
+                <h3 class="text-4xl font-bold text-green-600">
+                    {% with success_count=logs|dictsort:"status" %}
+                        {% for log in logs %}{% if log.status == 'success' %}+{% endif %}{% endfor %}
+                    {% endwith %}
+                </h3>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-start justify-between">
+            <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Failed</p>
+                <h3 class="text-4xl font-bold text-red-600">
+                    {% with failed_count=logs|dictsort:"status" %}
+                        {% for log in logs %}{% if log.status == 'failed' %}+{% endif %}{% endfor %}
+                    {% endwith %}
+                </h3>
+            </div>
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-times-circle text-red-600 text-xl"></i>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Statistics -->
-<div class="row mt-4">
-    {% with total=logs|length success=logs|dictsort:"status"|length failed=logs|dictsort:"status"|length %}
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4>{{ total }}</h4>
-            <p><i class="fas fa-envelope"></i> Total Sent</p>
+<!-- Logs Table -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-100 bg-gray-50">
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Announcement</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Group</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sent At</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Error Message</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for log in logs %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                        <strong class="text-gray-900 block">{{ log.announcement.title }}</strong>
+                        <small class="text-gray-500">{{ log.announcement.message|truncatewords:10 }}</small>
+                    </td>
+                    <td class="px-6 py-4">
+                        <strong class="text-gray-900 block">{{ log.group.group_name }}</strong>
+                        <code class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">{{ log.group.group_id }}</code>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ log.sent_at|date:"Y-m-d H:i:s" }}</td>
+                    <td class="px-6 py-4">
+                        {% if log.status == 'success' %}
+                            <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Success</span>
+                        {% elif log.status == 'failed' %}
+                            <span class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold"><i class="fas fa-exclamation-circle mr-1"></i>Failed</span>
+                        {% else %}
+                            <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if log.error_message %}
+                            <span class="text-red-600 font-medium">{{ log.error_message|truncatewords:5 }}</span>
+                        {% else %}
+                            <span class="text-gray-400">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Status Legend -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <h5 class="text-lg font-bold text-gray-900 mb-4"><i class="fas fa-question-circle text-indigo-600 mr-2"></i>Status Meanings</h5>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="flex gap-4">
+            <div class="flex-shrink-0">
+                <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Success</span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Message was successfully sent to the group</p>
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="flex-shrink-0">
+                <span class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold"><i class="fas fa-exclamation-circle mr-1"></i>Failed</span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Message failed to send. Check error message for details</p>
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="flex-shrink-0">
+                <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold"><i class="fas fa-hourglass-half mr-1"></i>Pending</span>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Message is waiting to be sent</p>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4 class="text-success">
-                {% with success_count=logs|dictsort:"status"|dictsort:"status" %}
-                    {% for log in logs %}{% if log.status == 'success' %}+{% endif %}{% endfor %}
-                {% endwith %}
-            </h4>
-            <p><i class="fas fa-check-circle"></i> Successful</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card stat-card">
-            <h4 class="text-danger">
-                {% with failed_count=logs|dictsort:"status"|dictsort:"status" %}
-                    {% for log in logs %}{% if log.status == 'failed' %}+{% endif %}{% endfor %}
-                {% endwith %}
-            </h4>
-            <p><i class="fas fa-times-circle"></i> Failed</p>
-        </div>
-    </div>
-    {% endwith %}
 </div>
 
 {% else %}
-<div class="alert alert-info" role="alert">
-    <i class="fas fa-info-circle"></i>
-    <strong>No logs yet!</strong>
-    <p>Once announcements are sent, they will appear here.</p>
-</div>
-{% endif %}
-
-<!-- Status Explanation -->
-<div class="card mt-4">
-    <div class="card-header bg-light">
-        <h5 class="mb-0"><i class="fas fa-question-circle"></i> Status Meanings</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <h6><span class="badge bg-success">Success</span></h6>
-                <p class="small">Message was successfully sent to the group</p>
-            </div>
-            <div class="col-md-4">
-                <h6><span class="badge bg-danger">Failed</span></h6>
-                <p class="small">Message failed to send. Check error message for details</p>
-            </div>
-            <div class="col-md-4">
-                <h6><span class="badge bg-warning">Pending</span></h6>
-                <p class="small">Message is waiting to be sent</p>
-            </div>
+<div class="bg-blue-50 border-l-4 border-blue-600 rounded-lg p-6">
+    <div class="flex items-start gap-4">
+        <div class="flex-shrink-0">
+            <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold text-blue-900 mb-1">No logs yet!</h3>
+            <p class="text-blue-700">Once announcements are sent, they will appear here.</p>
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

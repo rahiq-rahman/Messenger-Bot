@@ -1,89 +1,99 @@
-:root{
-  --bg: #f7f8fa;
-  --card: #ffffff;
-  --primary: #0066ff;
-  --muted: #6b7280;
-  --radius: 10px;
-  --shadow-sm: 0 6px 12px rgba(31,41,55,0.06);
-  --shadow-md: 0 10px 24px rgba(31,41,55,0.08);
+/* Professional Tailwind-based styles */
+
+/* Form inputs */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="time"],
+input[type="date"],
+select,
+textarea {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition font-medium;
 }
 
-/* Base */
-html,body{height:100%}
-body{
-  background:var(--bg);
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  color:#111827;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
+input[type="checkbox"],
+input[type="radio"] {
+    @apply w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer;
 }
 
-.brand-text{font-weight:600;color:var(--primary)}
-
-/* Navbar */
-.navbar{box-shadow:var(--shadow-sm)}
-.navbar .nav-link{color:#374151}
-.navbar .nav-link:hover{color:var(--primary)}
-
-/* Sidebar */
-.sidebar{
-  background:var(--card);
-  padding:18px;
-  border-radius:var(--radius);
-  box-shadow:var(--shadow-sm);
-}
-.sidebar .nav-link{
-  color:#374151;
-  padding:.6rem .8rem;
-  border-radius:8px;
-  margin-bottom:.25rem;
-}
-.sidebar .nav-link.active, .sidebar .nav-link:hover{
-  background:linear-gradient(90deg, rgba(0,102,255,0.08), rgba(0,102,255,0.03));
-  color:var(--primary);
+textarea {
+    @apply resize-none min-h-32;
 }
 
-/* Cards & elements */
-.card{border:none;border-radius:10px;box-shadow:var(--shadow-sm)}
-.card .card-header{border-bottom:none}
-.stat-card{padding:18px;border-left:4px solid var(--primary);background:var(--card)}
-.stat-card h4{font-size:26px;margin:0}
-.btn-primary{background:var(--primary);border-color:var(--primary)}
-.btn-primary:hover{background:#0057e6}
-
-/* Tables */
-.table{background:var(--card);border-radius:8px}
-.table thead th{background:transparent;border-bottom:1px solid #eef2f7;color:var(--muted)}
-
-/* Forms */
-.form-control,.form-select{border-radius:8px;border:1px solid #e6edf3}
-.form-control:focus{box-shadow:0 6px 18px rgba(0,102,255,0.08);border-color:var(--primary)}
-
-/* Alerts */
-.alert{border-radius:8px;box-shadow:none}
-
-.main-content{padding:22px}
-
-.footer{padding:22px;color:#6b7280;font-size:13px}
-
-/* Responsive tweaks */
-@media (max-width: 991.98px){
-  .main-content{padding:14px}
-  .sidebar{padding:12px}
+/* Alert messages */
+.alert-message {
+    animation: slideIn 0.3s ease-out;
 }
 
-@media (max-width: 575.98px){
-  .brand-text{display:none}
-  .stat-card h4{font-size:22px}
-  .card{border-radius:8px}
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Utility small button */
-.btn-action{padding:6px 10px;font-size:13px;border-radius:8px}
+/* Smooth transitions */
+button,
+a.btn,
+input[type="button"],
+input[type="submit"] {
+    @apply transition duration-200 ease-in-out;
+}
 
-/* Small visual polish for lists */
-.list-unstyled li{padding:.45rem 0;border-bottom:1px dashed #eef2f7}
+/* Badge and status styles */
+.status-badge {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold;
+}
 
-/* Offcanvas tweaks */
-.offcanvas{width:260px}
-.offcanvas .nav-link{padding:.6rem 0}
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-lg;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-lg hover:bg-gray-400;
+}
+
+/* Code blocks */
+code {
+    @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-700;
+}
+
+/* Table enhancements */
+table {
+    @apply border-collapse;
+}
+
+table th {
+    @apply font-semibold text-gray-700 text-sm;
+}
+
+table td {
+    @apply py-3;
+}
+
+/* Link styles */
+a {
+    @apply text-indigo-600 hover:text-indigo-700 transition;
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+    h1 {
+        @apply text-2xl;
+    }
+    h5 {
+        @apply text-base;
+    }
+}
+
