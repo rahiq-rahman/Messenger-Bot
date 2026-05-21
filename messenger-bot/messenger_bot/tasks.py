@@ -81,12 +81,17 @@ def send_messenger_message(recipient_id, message):
     Send message to Messenger using Facebook Graph API
     """
     try:
+        # Check if token is configured
+        if not settings.FACEBOOK_PAGE_ACCESS_TOKEN or settings.FACEBOOK_PAGE_ACCESS_TOKEN == 'PASTE_YOUR_REAL_TOKEN_HERE':
+            logger.error("Facebook page access token not configured. Please set FACEBOOK_PAGE_ACCESS_TOKEN in .env")
+            return False
+
         url = f"https://graph.facebook.com/{settings.FACEBOOK_API_VERSION}/me/messages"
-        
+
         headers = {
             'Content-Type': 'application/json',
         }
-        
+
         payload = {
             'recipient': {
                 'id': recipient_id
@@ -96,9 +101,9 @@ def send_messenger_message(recipient_id, message):
             },
             'access_token': settings.FACEBOOK_PAGE_ACCESS_TOKEN
         }
-        
+
         response = requests.post(url, json=payload, headers=headers, timeout=10)
-        
+
         if response.status_code == 200:
             data = response.json()
             logger.info(f"Message sent successfully. Recipient: {recipient_id}, Message ID: {data.get('message_id')}")
@@ -106,7 +111,7 @@ def send_messenger_message(recipient_id, message):
         else:
             logger.error(f"Failed to send message. Status: {response.status_code}, Response: {response.text}")
             return False
-            
+
     except requests.exceptions.RequestException as e:
         logger.error(f"Request error while sending message: {str(e)}")
         return False

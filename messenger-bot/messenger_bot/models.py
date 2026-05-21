@@ -59,34 +59,44 @@ class Announcement(models.Model):
 
     def should_send_today(self):
         """Check if announcement should be sent today"""
-        from datetime import datetime, date
-        
+        from datetime import datetime, date, timedelta
+
         if not self.is_active:
             return False
 
         today = date.today()
-        current_time = timezone.now().time()
+        now = timezone.now()
+        current_time = now.time()
+        current_hour = now.hour
+        current_minute = now.minute
+        scheduled_hour = self.scheduled_time.hour
+        scheduled_minute = self.scheduled_time.minute
+
+        # Check if scheduled time has passed in current timezone
+        time_passed = (current_hour > scheduled_hour) or (current_hour == scheduled_hour and current_minute >= scheduled_minute)
+
+        if not time_passed:
+            return False
+
+        # Check if already sent today
+        if self.last_sent:
+            last_sent_date = self.last_sent.astimezone(timezone.get_current_timezone()).date()
+            if last_sent_date == today:
+                return False
 
         if self.frequency == 'once':
-            return (self.scheduled_date == today and 
-                    current_time >= self.scheduled_time and
-                    (self.last_sent is None or self.last_sent.date() < today))
+            return self.scheduled_date == today
 
         elif self.frequency == 'daily':
-            return (current_time >= self.scheduled_time and
-                    (self.last_sent is None or self.last_sent.date() < today))
+            return True
 
         elif self.frequency == 'weekly':
             days = [d.strip().lower() for d in self.days_of_week.split(',')]
             today_name = today.strftime('%A').lower()
-            return (today_name in days and 
-                    current_time >= self.scheduled_time and
-                    (self.last_sent is None or self.last_sent.date() < today))
+            return today_name in days
 
         elif self.frequency == 'monthly':
-            return (today.day == self.day_of_month and
-                    current_time >= self.scheduled_time and
-                    (self.last_sent is None or self.last_sent.date() < today))
+            return today.day == self.day_of_month
 
         return False
 
