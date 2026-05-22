@@ -82,20 +82,14 @@ def send_messenger_message(recipient_id, message):
             logger.error("Facebook page access token not configured. Please set FACEBOOK_PAGE_ACCESS_TOKEN in .env")
             return False
 
-        url = f"https://graph.facebook.com/{settings.FACEBOOK_API_VERSION}/me/messages"
+        url = f"https://graph.facebook.com/{settings.FACEBOOK_API_VERSION}/me/messages?access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
+        payload = {
+            'recipient': {'id': recipient_id},
+            'message': {'text': message}
+        }
 
         headers = {
             'Content-Type': 'application/json',
-        }
-
-        payload = {
-            'recipient': {
-                'id': recipient_id
-            },
-            'message': {
-                'text': message
-            },
-            'access_token': settings.FACEBOOK_PAGE_ACCESS_TOKEN
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=10)
