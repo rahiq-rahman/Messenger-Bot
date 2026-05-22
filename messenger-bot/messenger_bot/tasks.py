@@ -90,6 +90,7 @@ def send_messenger_message(recipient_id, message):
 
         headers = {
             'Content-Type': 'application/json',
+
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=10)
