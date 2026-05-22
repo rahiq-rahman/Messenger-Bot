@@ -14,6 +14,7 @@ import json
 import logging
 import hmac
 import hashlib
+import os
 
 from .models import Announcement, MessengerGroup, AnnouncementLog
 from .serializers import AnnouncementSerializer, MessengerGroupSerializer, AnnouncementLogSerializer
@@ -343,3 +344,19 @@ class AnnouncementLogViewSet(viewsets.ReadOnlyModelViewSet):
         return AnnouncementLog.objects.filter(
             announcement__owner=self.request.user
         ).order_by('-sent_at')
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def trigger_announcements(request, secret_key):
+    """
+    Endpoint for external cron services to trigger announcements.
+    """
+    expected_key = os.environ.get('CRON_SECRET_KEY')
+    if not expected_key or secret_key != expected_key:
+        return JsonResponse({'status': 'error', 'message': 'Unauthorized'}, status=403)
+        
+    from .tasks import send_scheduled_announcements
+    send_scheduled_announcements()
+    
+    return JsonResponse({'status': 'success', 'message': 'Announcements processed'})

@@ -1,4 +1,3 @@
-from celery import shared_task
 import requests
 from django.conf import settings
 from .models import Announcement, AnnouncementLog, MessengerGroup
@@ -7,7 +6,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task
 def send_scheduled_announcements():
     """
     Check for announcements that need to be sent and send them
@@ -17,10 +15,9 @@ def send_scheduled_announcements():
     
     for announcement in announcements:
         if announcement.should_send_today():
-            send_announcement_to_groups.delay(announcement.id)
+            send_announcement_to_groups(announcement.id)
 
 
-@shared_task
 def send_announcement_to_groups(announcement_id):
     """
     Send a single announcement to all assigned groups
@@ -30,13 +27,12 @@ def send_announcement_to_groups(announcement_id):
         groups = announcement.groups.all()
         
         for group in groups:
-            send_to_group.delay(announcement_id, group.id)
+            send_to_group(announcement_id, group.id)
             
     except Announcement.DoesNotExist:
         logger.error(f"Announcement {announcement_id} not found")
 
 
-@shared_task
 def send_to_group(announcement_id, group_id):
     """
     Send announcement to a specific group
@@ -120,7 +116,6 @@ def send_messenger_message(recipient_id, message):
         return False
 
 
-@shared_task
 def receive_webhook(event_data):
     """
     Handle incoming webhook events from Facebook Messenger

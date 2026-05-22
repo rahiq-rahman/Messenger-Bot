@@ -39,6 +39,9 @@ urlpatterns = [
 
     # Messenger Webhook
     path('webhook/', views.messenger_webhook, name='messenger_webhook'),
+    
+    # Cron Trigger
+    path('cron/trigger-announcements/<str:secret_key>/', views.trigger_announcements, name='trigger_announcements'),
 
     # API URLs
     path('api/', include(router.urls)),
